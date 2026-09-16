@@ -2,6 +2,8 @@ import { loadEnv, defineConfig } from '@medusajs/framework/utils'
 
 loadEnv(process.env.NODE_ENV || 'development', process.cwd())
 
+const backendUrl = process.env.MEDUSA_BACKEND_URL || "http://localhost:9000"
+
 module.exports = defineConfig({
   projectConfig: {
     databaseUrl: process.env.DATABASE_URL,
@@ -11,6 +13,37 @@ module.exports = defineConfig({
       authCors: process.env.AUTH_CORS!,
       jwtSecret: process.env.JWT_SECRET || "supersecret",
       cookieSecret: process.env.COOKIE_SECRET || "supersecret",
-    }
-  }
+    },
+  },
+  modules: [
+    {
+      resolve: "@medusajs/medusa/file",
+      options: {
+        providers: [
+          {
+            resolve: "@medusajs/file-local",
+            id: "local",
+            options: {
+              backend_url: `${backendUrl}/static`,
+            },
+          },
+        ],
+      },
+    },
+    {
+      resolve: "@medusajs/medusa/payment",
+      options: {
+        providers: [
+          {
+            resolve: "@medusajs/payment-stripe",
+            id: "stripe",
+            options: {
+              apiKey: process.env.STRIPE_API_KEY,
+              webhookSecret: process.env.STRIPE_WEBHOOK_SECRET,
+            },
+          },
+        ],
+      },
+    },
+  ],
 })

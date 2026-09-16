@@ -5,11 +5,13 @@ import InteractiveLink from "@modules/common/components/interactive-link"
 import SkeletonProductGrid from "@modules/skeletons/templates/skeleton-product-grid"
 import RefinementList from "@modules/store/components/refinement-list"
 import { SortOptions } from "@modules/store/components/refinement-list/sort-products"
-import PaginatedProducts from "@modules/store/templates/paginated-products"
+import PaginatedProducts, {
+  fetchPaginatedProducts,
+} from "@modules/store/templates/paginated-products"
 import LocalizedClientLink from "@modules/common/components/localized-client-link"
 import { HttpTypes } from "@medusajs/types"
 
-export default function CategoryTemplate({
+export default async function CategoryTemplate({
   category,
   sortBy,
   page,
@@ -24,6 +26,13 @@ export default function CategoryTemplate({
   const sort = sortBy || "created_at"
 
   if (!category || !countryCode) notFound()
+
+  const { products, count, region } = await fetchPaginatedProducts({
+    sortBy: sort,
+    page: pageNumber,
+    categoryId: category.id,
+    countryCode,
+  })
 
   const parents = [] as HttpTypes.StoreProductCategory[]
 
@@ -77,20 +86,14 @@ export default function CategoryTemplate({
             </ul>
           </div>
         )}
-        <Suspense
-          fallback={
-            <SkeletonProductGrid
-              numberOfProducts={category.products?.length ?? 8}
-            />
-          }
-        >
+        {region && (
           <PaginatedProducts
-            sortBy={sort}
+            products={products}
+            count={count}
             page={pageNumber}
-            categoryId={category.id}
-            countryCode={countryCode}
+            region={region}
           />
-        </Suspense>
+        )}
       </div>
     </div>
   )

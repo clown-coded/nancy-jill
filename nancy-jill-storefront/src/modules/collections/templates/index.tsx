@@ -1,12 +1,11 @@
-import { Suspense } from "react"
-
-import SkeletonProductGrid from "@modules/skeletons/templates/skeleton-product-grid"
-import RefinementList from "@modules/store/components/refinement-list"
 import { SortOptions } from "@modules/store/components/refinement-list/sort-products"
-import PaginatedProducts from "@modules/store/templates/paginated-products"
+import PaginatedProducts, {
+  fetchPaginatedProducts,
+} from "@modules/store/templates/paginated-products"
+import { SixSpotGrid, Spot } from "@modules/layout/components/six-spot-grid"
 import { HttpTypes } from "@medusajs/types"
 
-export default function CollectionTemplate({
+export default async function CollectionTemplate({
   sortBy,
   collection,
   page,
@@ -20,28 +19,38 @@ export default function CollectionTemplate({
   const pageNumber = page ? parseInt(page) : 1
   const sort = sortBy || "created_at"
 
+  const { products, count, region } = await fetchPaginatedProducts({
+    sortBy: sort,
+    page: pageNumber,
+    collectionId: collection.id,
+    countryCode,
+  })
+
   return (
-    <div className="flex flex-col small:flex-row small:items-start py-6 content-container">
-      <RefinementList sortBy={sort} />
-      <div className="w-full">
-        <div className="mb-8 text-2xl-semi">
-          <h1>{collection.title}</h1>
-        </div>
-        <Suspense
-          fallback={
-            <SkeletonProductGrid
-              numberOfProducts={collection.products?.length}
-            />
-          }
+    <SixSpotGrid>
+      <Spot
+        id={3}
+        className="hidden small:flex fixed top-[var(--nj-band-top)] left-0 h-[var(--nj-band-h)] w-[var(--nj-col1)] small:left-[18px] small:w-[calc(var(--nj-col1)-18px)] z-20 pointer-events-none"
+      >
+        <h1
+          data-testid="collection-page-title"
+          className="nj-band-title uppercase"
         >
-          <PaginatedProducts
-            sortBy={sort}
-            page={pageNumber}
-            collectionId={collection.id}
-            countryCode={countryCode}
-          />
-        </Suspense>
-      </div>
-    </div>
+          {collection.title}
+        </h1>
+      </Spot>
+      <Spot id={2} rowSpan={3} className="min-w-0">
+        <div className="pt-[var(--nj-band-bottom)] w-full">
+          {region && (
+            <PaginatedProducts
+              products={products}
+              count={count}
+              page={pageNumber}
+              region={region}
+            />
+          )}
+        </div>
+      </Spot>
+    </SixSpotGrid>
   )
 }

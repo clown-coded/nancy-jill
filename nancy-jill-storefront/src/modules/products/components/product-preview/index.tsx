@@ -10,10 +10,13 @@ export default async function ProductPreview({
   product,
   isFeatured,
   region,
+  index,
 }: {
   product: HttpTypes.StoreProduct
   isFeatured?: boolean
   region: HttpTypes.StoreRegion
+  /** When set, a mobile caption row is rendered under the image: [01] TITLE */
+  index?: number
 }) {
   // const pricedProduct = await listProducts({
   //   regionId: region.id,
@@ -36,14 +39,21 @@ export default async function ProductPreview({
           images={product.images}
           size="full"
           isFeatured={isFeatured}
+          className="opacity-75 group-hover:opacity-100 transition-opacity"
         />
-        <div className="flex txt-compact-medium mt-4 justify-between">
-          <Text className="text-ui-fg-subtle" data-testid="product-title">
+        {index != null && (
+          <div className="small:hidden flex items-baseline gap-x-1.5 pt-1 text-[6px] leading-[8px]">
+            <span className="shrink-0">
+              [{(index + 1).toString().padStart(2, "0")}]
+            </span>
+            <span className="uppercase truncate">{product.title}</span>
+          </div>
+        )}
+        <div className="hidden small:flex opacity-0 group-hover:opacity-100 transition-opacity flex-col items-start pt-1 leading-[14px] text-[10px]">
+          <Text className="uppercase leading-5" data-testid="product-title">
             {product.title}
           </Text>
-          <div className="flex items-center gap-x-2">
-            {cheapestPrice && <PreviewPrice price={cheapestPrice} />}
-          </div>
+          {cheapestPrice && <PreviewPrice price={cheapestPrice} />}
         </div>
       </div>
     </LocalizedClientLink>

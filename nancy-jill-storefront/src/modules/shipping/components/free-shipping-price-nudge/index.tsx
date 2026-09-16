@@ -217,7 +217,7 @@ function FreeShippingPopup({
         </Button>
       </div>
 
-      <div className="w-[400px] bg-black text-white p-6 rounded-lg ">
+      <div className="w-[400px] bg-black text-nj-bg p-6 rounded-lg ">
         <div className="pb-4">
           <div className="space-y-3">
             <div className="flex justify-between text-[15px] text-neutral-400">
@@ -238,7 +238,7 @@ function FreeShippingPopup({
                 })}
               >
                 Only{" "}
-                <span className="text-white">
+                <span className="text-nj-bg">
                   {convertToLocale({
                     amount: price.target_remaining,
                     currency_code: cart.currency_code,
@@ -264,14 +264,14 @@ function FreeShippingPopup({
 
         <div className="flex gap-3">
           <LocalizedClientLink
-            className="rounded-2xl bg-transparent shadow-none outline-none border-[1px] border-white text-[15px] py-2.5 px-4"
+            className="rounded-2xl bg-transparent shadow-none outline-none border-[1px] border-nj-bg text-[15px] py-2.5 px-4"
             href="/cart"
           >
             View cart
           </LocalizedClientLink>
 
           <LocalizedClientLink
-            className="flex-grow rounded-2xl bg-white text-neutral-950 shadow-none outline-none border-[1px] border-white text-[15px] py-2.5 px-4 text-center"
+            className="flex-grow rounded-2xl bg-nj-bg text-neutral-950 shadow-none outline-none border-[1px] border-nj-bg text-[15px] py-2.5 px-4 text-center"
             href="/store"
           >
             View products

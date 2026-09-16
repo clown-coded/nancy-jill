@@ -3,7 +3,6 @@
 import { addToCart } from "@lib/data/cart"
 import { useIntersection } from "@lib/hooks/use-in-view"
 import { HttpTypes } from "@medusajs/types"
-import { Button } from "@medusajs/ui"
 import Divider from "@modules/common/components/divider"
 import OptionSelect from "@modules/products/components/product-actions/option-select"
 import { isEqual } from "lodash"
@@ -33,6 +32,8 @@ export default function ProductActions({
 }: ProductActionsProps) {
   const [options, setOptions] = useState<Record<string, string | undefined>>({})
   const [isAdding, setIsAdding] = useState(false)
+  const [quantity, setQuantity] = useState(1)
+  const [showActions, setShowActions] = useState(false)
   const countryCode = useParams().countryCode as string
 
   // If there is only 1 variant, preselect the options
@@ -106,7 +107,7 @@ export default function ProductActions({
 
     await addToCart({
       variantId: selectedVariant.id,
-      quantity: 1,
+      quantity,
       countryCode,
     })
 
@@ -115,10 +116,31 @@ export default function ProductActions({
 
   return (
     <>
-      <div className="flex flex-col gap-y-2" ref={actionsRef}>
+      {!showActions && (
+        <button
+          onClick={() => setShowActions(true)}
+          className="text-[20px] small:text-[12px] text-nj-main text-right small:text-left hover:italic"
+        >
+          buy me :)
+        </button>
+      )}
+      <div
+        className={`fixed bottom-0 right-0 w-1/2 bg-nj-main text-nj-bg pt-2 pl-2 pr-4 pb-4 transition-transform duration-300 small:static small:w-auto small:bg-transparent small:text-nj-main small:p-0 small:transform-none small:transition-none ${
+          showActions ? "translate-y-0" : "translate-y-full small:hidden"
+        }`}
+      >
+      <button
+        onClick={() => setShowActions(false)}
+        className="absolute top-2 right-2 small:hidden text-[14px] small:text-[12px] leading-none"
+        aria-label="close"
+      >
+        [x]
+      </button>
+      <ProductPrice product={product} variant={selectedVariant} />
+      <div className="flex flex-col " ref={actionsRef}>
         <div>
           {(product.variants?.length ?? 0) > 1 && (
-            <div className="flex flex-col gap-y-4">
+            <div className="flex flex-col gap-y-1">
               {(product.options || []).map((option) => {
                 return (
                   <div key={option.id}>
@@ -133,14 +155,31 @@ export default function ProductActions({
                   </div>
                 )
               })}
-              <Divider />
+
             </div>
           )}
         </div>
 
-        <ProductPrice product={product} variant={selectedVariant} />
 
-        <Button
+        <div className="flex items-center gap-x-3 pt-12">
+          <div className="italic font-medium">Quantity:</div>
+          <button
+            onClick={() => setQuantity((q) => Math.max(1, q - 1))}
+            className="w-8 h-8 flex items-center justify-center"
+            disabled={quantity <= 1}
+          >
+            -
+          </button>
+          <span className="min-w-12 text-center whitespace-nowrap">[ {quantity} ]</span>
+          <button
+            onClick={() => setQuantity((q) => q + 1)}
+            className="w-8 h-8 flex items-center justify-center "
+          >
+            +
+          </button>
+        </div>
+
+        <button
           onClick={handleAddToCart}
           disabled={
             !inStock ||
@@ -149,28 +188,18 @@ export default function ProductActions({
             isAdding ||
             !isValidVariant
           }
-          variant="primary"
-          className="w-full h-10"
-          isLoading={isAdding}
+          className="text-[32px] lg:leading-10 text-nj-bg small:text-nj-main text-left hover:italic disabled:opacity-50 disabled:cursor-not-allowed bg-nj-main small:bg-nj-bg px-2 py-1"
           data-testid="add-product-button"
         >
-          {!selectedVariant && !options
+          {isAdding
+            ? "Adding..."
+            : !selectedVariant && !options
             ? "Select variant"
             : !inStock || !isValidVariant
             ? "Out of stock"
             : "Add to cart"}
-        </Button>
-        <MobileActions
-          product={product}
-          variant={selectedVariant}
-          options={options}
-          updateOptions={setOptionValue}
-          inStock={inStock}
-          handleAddToCart={handleAddToCart}
-          isAdding={isAdding}
-          show={!inView}
-          optionsDisabled={!!disabled || isAdding}
-        />
+        </button>
+      </div>
       </div>
     </>
   )

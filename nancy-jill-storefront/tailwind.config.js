@@ -34,6 +34,13 @@ module.exports = {
           80: "#1F2937",
           90: "#111827",
         },
+        nj: {
+          bg: "var(--nj-bg)",
+          main: "#032A8F",
+          bright: "#002FA7",
+          secondary: "#090083",
+          dark: "#030124",
+        },
       },
       borderRadius: {
         none: "0px",
@@ -60,14 +67,11 @@ module.exports = {
       },
       fontFamily: {
         sans: [
-          "Inter",
-          "-apple-system",
-          "BlinkMacSystemFont",
-          "Segoe UI",
-          "Roboto",
-          "Helvetica Neue",
-          "Ubuntu",
-          "sans-serif",
+          "Times Now",
+          "Baskerville",
+          "Georgia",
+          "Times New Roman",
+          "serif",
         ],
       },
       keyframes: {

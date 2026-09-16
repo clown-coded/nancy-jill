@@ -2,6 +2,180 @@
 @import "tailwindcss/components";
 @import "tailwindcss/utilities";
 
+html {
+  /* No reserved gutter: it pushed fixed guides ~15px in from the right edge */
+  scrollbar-gutter: auto;
+}
+
+/* Guides run to the physical edge, so keep the scrollbar out of the layout */
+html::-webkit-scrollbar {
+  width: 0;
+  height: 0;
+}
+
+/*
+ * Horizontal guide band shared by GridGuides, SixSpotGrid rows and all
+ * fixed labels aligned to them. Mobile: sits just below the fixed nav
+ * (8px pad + logo at (50vw-8px)*62/331, menu/cart inline beside it + gap).
+ * Desktop: original one-third-viewport position.
+ */
+:root {
+  --nj-safe-top: env(safe-area-inset-top, 0px);
+  /* Page background; swapped by the swatches in the right strip */
+  --nj-bg: #fdfeff;
+  /* Overwritten once by the script in app/layout.tsx; stable while the iOS toolbar animates */
+  --nj-vh: 100vh;
+  --nj-band-top: calc(var(--nj-safe-top) + (50vw - 8px) * 62 / 331 + 16px); /* notch + 8px pad + logo height + 8px */
+  --nj-band-h: 28px;
+  --nj-band-bottom: calc(var(--nj-band-top) + var(--nj-band-h));
+  /* Column 1 width (left edge of gutter). Mobile: hugs the nav menu text. */
+  --nj-col1: 0px;
+}
+@media (min-width: 1024px) {
+  :root {
+    --nj-band-h: 44px;
+    --nj-band-top: calc(33.3333vh - 22px);
+    --nj-col1: calc((100vw - 48px) / 3);
+  }
+}
+
+@font-face {
+  font-family: "Times Now";
+  src: url("/fonts/TimesNow-Light.otf") format("opentype");
+  font-weight: 300;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Times Now";
+  src: url("/fonts/TimesNow-Light.otf") format("opentype");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Times Now";
+  src: url("/fonts/TimesNow-Light.otf") format("opentype");
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Times Now";
+  src: url("/fonts/TimesNow-Light.otf") format("opentype");
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Times Now";
+  src: url("/fonts/TimesNow-Light.otf") format("opentype");
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Times Now";
+  src: url("/fonts/TimesNow-Light.otf") format("opentype");
+  font-weight: 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+.guide-line {
+  opacity: 0.5;
+  transition: opacity 0.15s ease-out,
+    background-color 0.5s ease,
+    top 0.5s cubic-bezier(0.22, 1, 0.36, 1) 0.15s;
+}
+
+/* Matches the guides when the home imagery fades them from blue to white */
+body {
+  transition: color 0.5s ease;
+}
+
+html.guides-hidden .guide-line {
+  opacity: 0;
+}
+
+/* Mobile: band grows to nav height once the product title replaces the collection number */
+@media (max-width: 1023px) {
+  html.nj-band-tall {
+    --nj-band-h: calc(var(--nj-band-top) * 1.5);
+  }
+}
+
+/* Mobile: while nav overlays media at top of page, guides and band labels go white */
+@media (max-width: 1023px) {
+  html.nj-overlay .guide-line {
+    background-color: var(--nj-bg);
+  }
+  html.nj-overlay .nj-overlay-text {
+    color: var(--nj-bg);
+  }
+}
+
+/* Desktop home: content is full-bleed media, so guides and text sitting on it go white */
+@media (min-width: 1024px) {
+  html.nj-home .guide-line:not(.guide-line-edge) {
+    background-color: var(--nj-bg);
+  }
+  html.nj-home body {
+    color: var(--nj-bg);
+  }
+}
+
+/* While the trail is being drawn the pointer becomes a pen */
+html.nj-drawing,
+html.nj-drawing * {
+  user-select: none;
+  -webkit-user-select: none;
+  cursor: url("data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24'%3E%3Cpath d='M2 22l1.6-5.2L15.2 5.2l3.6 3.6L7.2 20.4 2 22z' fill='%23032A8F'/%3E%3Cpath d='M16.6 3.8l1.8-1.8a1.7 1.7 0 012.4 0l1.2 1.2a1.7 1.7 0 010 2.4l-1.8 1.8-3.6-3.6z' fill='%23032A8F'/%3E%3C/svg%3E") 2 22, crosshair;
+}
+
+@keyframes nj-guide-v {
+  from { transform: scaleY(0); }
+  to { transform: scaleY(1); }
+}
+@keyframes nj-guide-h {
+  from { transform: scaleX(0); }
+  to { transform: scaleX(1); }
+}
+
+.guide-line-v {
+  transform-origin: top;
+  animation: nj-guide-v 2000ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.guide-line-h {
+  transform-origin: left;
+  animation: nj-guide-h 2000ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.nj-guides-intro-done .guide-line-v,
+.nj-guides-intro-done .guide-line-h {
+  animation: none !important;
+}
+
+.nj-fade-in-1,
+.nj-fade-in-2 {
+  opacity: 0;
+  animation: nj-intro-fade 500ms ease forwards;
+}
+.nj-fade-in-1 { animation-delay: 2000ms; }
+.nj-fade-in-2 { animation-delay: 2400ms; }
+
+.nj-guides-intro-done .nj-fade-in-1,
+.nj-guides-intro-done .nj-fade-in-2 {
+  opacity: 1 !important;
+  animation: none !important;
+}
+
 @layer utilities {
   /* Chrome, Safari and Opera */
   .no-scrollbar::-webkit-scrollbar {
@@ -55,7 +229,7 @@
   }
 
   .contrast-btn {
-    @apply px-4 py-2 border border-black rounded-full hover:bg-black hover:text-white transition-colors duration-200 ease-in;
+    @apply px-4 py-2 border border-black rounded-full hover:bg-black hover:text-nj-bg transition-colors duration-200 ease-in;
   }
 
   .text-xsmall-regular {
@@ -109,4 +283,139 @@
   .text-3xl-semi {
     @apply text-[32px] leading-[44px] font-semibold;
   }
+}
+
+
+@keyframes nj-intro-fade {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+[data-intro] {
+  opacity: 0;
+  animation: nj-intro-fade 320ms ease forwards;
+}
+
+[data-intro="menu"] { animation-delay: 2700ms; }
+[data-intro="cart"] { animation-delay: 2700ms; }
+[data-intro="side"] { animation-delay: 2900ms; }
+
+[data-home-intro] {
+  opacity: 0;
+  animation: nj-intro-fade 500ms ease forwards;
+}
+[data-home-intro="img-1"] { animation-delay: 1000ms; }
+[data-home-intro="img-2"] { animation-delay: 1400ms; }
+[data-home-intro="img-3"] { animation-delay: 1800ms; }
+[data-home-intro="title"] { animation-delay: 2200ms; }
+
+.nj-intro-done [data-intro],
+.nj-intro-done [data-home-intro] {
+  animation: none !important;
+  opacity: 1 !important;
+}
+
+@keyframes nj-vt-fade-in {
+  from { opacity: 0; filter: blur(4px); }
+  to   { opacity: 1; filter: blur(0); }
+}
+
+@keyframes nj-vt-fade-out {
+  from { opacity: 1; filter: blur(0); }
+  to   { opacity: 0; filter: blur(4px); }
+}
+
+::view-transition-old(root) {
+  animation: nj-vt-fade-out 280ms ease-in both;
+}
+
+::view-transition-new(root) {
+  animation: nj-vt-fade-in 1ms 280ms both;
+}
+
+[data-stagger-children] > * {
+  opacity: 0;
+  animation: nj-intro-fade 500ms ease forwards;
+}
+[data-stagger-children] > *:nth-child(1) { animation-delay: 0ms; }
+[data-stagger-children] > *:nth-child(2) { animation-delay: 200ms; }
+[data-stagger-children] > *:nth-child(3) { animation-delay: 400ms; }
+[data-stagger-children] > *:nth-child(4) { animation-delay: 600ms; }
+[data-stagger-children] > *:nth-child(5) { animation-delay: 800ms; }
+[data-stagger-children] > *:nth-child(n+6) { animation-delay: 1000ms; }
+
+::view-transition-old(nj-guide-1),
+::view-transition-old(nj-guide-2),
+::view-transition-old(nj-guide-3),
+::view-transition-old(nj-guide-4),
+::view-transition-old(nj-guide-5),
+::view-transition-old(nj-nav),
+::view-transition-old(nj-menu),
+::view-transition-old(nj-sidebar),
+::view-transition-old(nj-guide-toggle) {
+  animation: none;
+  display: none;
+}
+
+::view-transition-new(nj-guide-1),
+::view-transition-new(nj-guide-2),
+::view-transition-new(nj-guide-3),
+::view-transition-new(nj-guide-4),
+::view-transition-new(nj-guide-5),
+::view-transition-new(nj-nav),
+::view-transition-new(nj-menu),
+::view-transition-new(nj-sidebar),
+::view-transition-new(nj-guide-toggle) {
+  animation: none;
+}
+
+::view-transition-group(nj-guide-1),
+::view-transition-group(nj-guide-2),
+::view-transition-group(nj-guide-3),
+::view-transition-group(nj-guide-4),
+::view-transition-group(nj-guide-5),
+::view-transition-group(nj-nav),
+::view-transition-group(nj-menu),
+::view-transition-group(nj-sidebar),
+::view-transition-group(nj-guide-toggle),
+::view-transition-image-pair(nj-guide-1),
+::view-transition-image-pair(nj-guide-2),
+::view-transition-image-pair(nj-guide-3),
+::view-transition-image-pair(nj-guide-4),
+::view-transition-image-pair(nj-guide-5),
+::view-transition-image-pair(nj-nav),
+::view-transition-image-pair(nj-menu),
+::view-transition-image-pair(nj-sidebar),
+::view-transition-image-pair(nj-guide-toggle) {
+  animation: none;
+}
+
+
+/*
+ * Band titles (home / store / collection headings in the guide band).
+ * Sized so the cap height equals the band height exactly:
+ * Times Now capHeight = 662/1000 upm, so font-size = 100cqh / 0.662.
+ * --nj-band-title-shift nudges the baseline onto the bottom guide line;
+ * it depends on how the browser derives the content area from the font's
+ * hhea metrics (asc 763 / desc 237 / gap 150), so it stays a knob.
+ */
+.nj-band-title {
+  font-size: 151cqh;
+  line-height: 1;
+  margin: 0;
+  padding: 0;
+  --nj-band-title-shift: 0.068em;
+  transform: translateY(var(--nj-band-title-shift));
+}
+
+/* Media is decoration, not content to drag out of the page */
+img,
+video {
+  -webkit-user-drag: none;
+}
+
+/* Text selection: nj-main at low opacity, so the ink underneath stays readable */
+::selection {
+  background-color: rgb(3 42 143 / 0.2);
+  color: inherit;
 }

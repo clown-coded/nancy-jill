@@ -47,20 +47,14 @@ export default async function RelatedProducts({
   }
 
   return (
-    <div className="product-page-constraint">
-      <div className="flex flex-col items-center text-center mb-16">
-        <span className="text-base-regular text-gray-600 mb-6">
-          Related products
-        </span>
-        <p className="text-2xl-regular text-ui-fg-base max-w-lg">
-          You might also want to check out these products.
-        </p>
-      </div>
-
-      <ul className="grid grid-cols-2 small:grid-cols-3 medium:grid-cols-4 gap-x-6 gap-y-8">
-        {products.map((product) => (
-          <li key={product.id}>
-            <Product region={region} product={product} />
+    <div className="w-full">
+      <ul className="grid grid-cols-2 gap-2 small:flex small:gap-x-6 items-start small:overflow-x-auto no-scrollbar">
+        {products.map((product, index) => (
+          <li
+            key={product.id}
+            className="w-auto min-w-0 max-w-none small:w-[180px] small:min-w-[180px] small:max-w-[180px] overflow-hidden"
+          >
+            <Product region={region} product={product} index={index} />
           </li>
         ))}
       </ul>
