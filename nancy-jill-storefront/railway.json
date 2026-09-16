@@ -4,7 +4,7 @@
     "builder": "NIXPACKS",
     "buildCommand": "npm run build",
     "watchPatterns": [
-      "nancy-jill-storefront/**"
+      "**"
     ]
   },
   "deploy": {
