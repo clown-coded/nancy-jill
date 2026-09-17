@@ -47,10 +47,11 @@ export const listCollections = async (
 export const getCollectionByHandle = async (
   handle: string
 ): Promise<HttpTypes.StoreCollection> => {
+  // No cookie-derived cache tags here. This page uses generateStaticParams,
+  // so Next treats it as static; reading cookies would flip it to dynamic at
+  // runtime and throw. The tags were never usable anyway — getCacheTag builds
+  // them from a per-visitor _medusa_cache_id, which revalidateTag can't match.
   const next = {
-    ...(await getCacheOptions("collections")),
-    // Cache tags depend on a per-visitor cookie, so they can be absent.
-    // Revalidate on a timer as well, to bound staleness either way.
     revalidate: 60,
   }
 

@@ -1,7 +1,7 @@
 import { Metadata } from "next"
 import { notFound } from "next/navigation"
 
-import { getCollectionByHandle, listCollections } from "@lib/data/collections"
+import { getCollectionByHandle } from "@lib/data/collections"
 import EditorialTemplate from "@modules/collections/templates/editorial"
 import NotebookTemplate from "@modules/collections/templates/notebook"
 
@@ -9,19 +9,11 @@ type Props = {
   params: Promise<{ handle: string; countryCode: string }>
 }
 
-export async function generateStaticParams() {
-  const { collections } = await listCollections()
-
-  if (!collections) {
-    return []
-  }
-
-  return collections
-    .map((collection) =>
-      collection.handle ? { handle: collection.handle } : null
-    )
-    .filter(Boolean)
-}
+// Rendered per request rather than prerendered: something in this page's
+// render path reads cookies, which conflicts with generateStaticParams and
+// throws "Page changed from static to dynamic at runtime". The underlying
+// fetch is still cached (revalidate: 60), so this does not add backend calls.
+export const dynamic = "force-dynamic"
 
 export async function generateMetadata(props: Props): Promise<Metadata> {
   const params = await props.params
