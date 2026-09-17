@@ -1,0 +1,36 @@
+services:
+  - type: web
+    name: nancy-jill-backend
+    runtime: node
+    plan: free
+    rootDir: nancy-jill
+    buildCommand: npm ci --include=dev && npm run build && cd .medusa/server && npm install --omit=dev
+    startCommand: cd .medusa/server && npm run start
+    healthCheckPath: /health
+    envVars:
+      - key: NODE_VERSION
+        value: "22"
+      # Neon connection string — paste in the Render dashboard
+      - key: DATABASE_URL
+        sync: false
+      - key: JWT_SECRET
+        generateValue: true
+      - key: COOKIE_SECRET
+        generateValue: true
+      - key: REVALIDATION_SECRET
+        sync: false
+      - key: STRIPE_API_KEY
+        sync: false
+      - key: STRIPE_WEBHOOK_SECRET
+        sync: false
+      # Set these once both URLs exist
+      - key: MEDUSA_BACKEND_URL
+        sync: false
+      - key: STOREFRONT_URL
+        sync: false
+      - key: STORE_CORS
+        sync: false
+      - key: ADMIN_CORS
+        sync: false
+      - key: AUTH_CORS
+        sync: false
