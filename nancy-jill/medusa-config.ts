@@ -3,6 +3,7 @@ import { loadEnv, defineConfig } from '@medusajs/framework/utils'
 loadEnv(process.env.NODE_ENV || 'development', process.cwd())
 
 const backendUrl = process.env.MEDUSA_BACKEND_URL || "http://localhost:9000"
+const stripeApiKey = process.env.STRIPE_API_KEY
 
 module.exports = defineConfig({
   projectConfig: {
@@ -30,20 +31,26 @@ module.exports = defineConfig({
         ],
       },
     },
-    {
-      resolve: "@medusajs/medusa/payment",
-      options: {
-        providers: [
+    // Only register Stripe when it is configured, so the backend still boots
+    // without payment credentials (migrations, seeding, local dev).
+    ...(stripeApiKey
+      ? [
           {
-            resolve: "@medusajs/payment-stripe",
-            id: "stripe",
+            resolve: "@medusajs/medusa/payment",
             options: {
-              apiKey: process.env.STRIPE_API_KEY,
-              webhookSecret: process.env.STRIPE_WEBHOOK_SECRET,
+              providers: [
+                {
+                  resolve: "@medusajs/payment-stripe",
+                  id: "stripe",
+                  options: {
+                    apiKey: stripeApiKey,
+                    webhookSecret: process.env.STRIPE_WEBHOOK_SECRET,
+                  },
+                },
+              ],
             },
           },
-        ],
-      },
-    },
+        ]
+      : []),
   ],
 })
