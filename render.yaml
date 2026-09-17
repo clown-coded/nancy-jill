@@ -4,7 +4,7 @@ services:
     runtime: node
     plan: free
     rootDir: nancy-jill
-    buildCommand: npm ci --include=dev && npm run build && cd .medusa/server && npm install --omit=dev
+    buildCommand: npm ci --include=dev && npm run build && mkdir -p .medusa/server/static && cp -R static/. .medusa/server/static/ && cd .medusa/server && npm install --omit=dev
     startCommand: cd .medusa/server && npm run start
     healthCheckPath: /health
     envVars:

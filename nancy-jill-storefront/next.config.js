@@ -36,6 +36,10 @@ const nextConfig = {
       },
       {
         protocol: "https",
+        hostname: "**.onrender.com",
+      },
+      {
+        protocol: "https",
         hostname: "medusa-public-images.s3.eu-west-1.amazonaws.com",
       },
       {
