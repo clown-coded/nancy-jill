@@ -47,13 +47,16 @@ export const getCollectionByHandle = async (
 ): Promise<HttpTypes.StoreCollection> => {
   const next = {
     ...(await getCacheOptions("collections")),
+    // Cache tags depend on a per-visitor cookie, so they can be absent.
+    // Revalidate on a timer as well, to bound staleness either way.
+    revalidate: 60,
   }
 
   return sdk.client
     .fetch<HttpTypes.StoreCollectionListResponse>(`/store/collections`, {
       query: { handle, fields: "*products,+metadata" },
       next,
-      cache: "no-store",
+      cache: "force-cache",
     })
     .then(({ collections }) => collections[0])
 }
